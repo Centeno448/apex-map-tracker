@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use std::str::FromStr;
 
 #[derive(Deserialize, Debug)]
 pub enum MapRotationCode {

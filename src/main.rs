@@ -1,11 +1,10 @@
 #![allow(dead_code)]
 
 use dotenv;
-use map_rotation::{MapRotation, MapRotationCode};
+use map_rotation::MapRotation;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+
 use std::env;
-use std::fmt::format;
 
 mod map_rotation;
 
