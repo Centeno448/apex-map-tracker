@@ -8,4 +8,6 @@ pub enum MapRotationCode {
     StormPointRotation,
     #[serde(rename = "olympus_rotation")]
     OlympusRotation,
+    #[serde(rename = "broken_moon_rotation")]
+    BrokenMoonRotation,
 }
