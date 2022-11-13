@@ -2,7 +2,6 @@ use super::map_rotation_code::MapRotationCode;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
-
 pub struct CurrentMap {
     #[serde(rename = "readableDate_start")]
     readable_date_start: String,
