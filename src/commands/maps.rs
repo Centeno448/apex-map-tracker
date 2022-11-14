@@ -1,8 +1,7 @@
 use crate::map_rotation::MapRotationCode;
 use crate::APP_SETTINGS;
 
-use crate::map_rotation::calculate_time_to_map_in_minutes;
-use crate::map_rotation::MapRotation;
+use crate::map_rotation::{calculate_time_to_map_in_minutes, MapRotation};
 
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::CommandResult;
