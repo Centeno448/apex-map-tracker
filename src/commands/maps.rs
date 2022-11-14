@@ -24,7 +24,7 @@ pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
 
     if current_map == MapRotationCode::OlympusRotation {
         let time_left = &resp.current.remaining_timer;
-        let response = format!("En efecto, esta olympus. Tiempo restante: {time_left}");
+        let response = format!("En efecto, está olympus. Tiempo restante: {time_left}");
 
         msg.channel_id.say(&ctx.http, response).await?;
     } else {
