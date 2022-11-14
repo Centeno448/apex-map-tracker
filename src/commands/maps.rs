@@ -1,6 +1,7 @@
 use crate::map_rotation::MapRotationCode;
 use crate::APP_SETTINGS;
 
+use crate::map_rotation::calculate_time_to_map_in_minutes;
 use crate::map_rotation::MapRotation;
 
 use serenity::framework::standard::macros::command;
@@ -23,11 +24,21 @@ pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
     let current_map = resp.current.code;
 
     if current_map == MapRotationCode::OlympusRotation {
-        msg.channel_id
-            .say(&ctx.http, "En efecto, esta olympus por ")
-            .await?;
+        let time_left = &resp.current.remaining_timer;
+        let response = format!("En efecto, esta olympus. Tiempo restante: {time_left}");
+
+        msg.channel_id.say(&ctx.http, response).await?;
     } else {
-        msg.channel_id.say(&ctx.http, "No esta olympus.").await?;
+        let time_until = calculate_time_to_map_in_minutes(
+            &MapRotationCode::OlympusRotation,
+            &resp.current.remaining_mins,
+            &resp.next,
+        );
+
+        let response =
+            format!("Nel, actualmente está {current_map}. Olympus estára en {time_until} minutos.");
+
+        msg.channel_id.say(&ctx.http, response).await?;
     }
 
     Ok(())
