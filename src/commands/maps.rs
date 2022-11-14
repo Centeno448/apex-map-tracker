@@ -11,7 +11,7 @@ use serenity::prelude::*;
 #[command]
 pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
     let client = reqwest::Client::new();
-    let request_url = &APP_SETTINGS.map_rotation_url;
+    let request_url = &APP_SETTINGS.read().await.map_rotation_url;
 
     let resp = client
         .get(request_url)

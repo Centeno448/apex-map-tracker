@@ -15,13 +15,15 @@ use tracing::{error, info};
 
 use std::collections::HashSet;
 use std::sync::Arc;
+use tokio::sync::RwLock;
 
 mod commands;
 mod config;
 mod map_rotation;
 
 lazy_static! {
-    pub static ref APP_SETTINGS: AppConfig = AppConfig::default();
+    pub static ref APP_SETTINGS: Arc<RwLock<AppConfig>> =
+        Arc::new(RwLock::new(AppConfig::default()));
 }
 
 pub struct ShardManagerContainer;
@@ -51,7 +53,7 @@ struct General;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().expect("Failed to load environment variables");
 
-    let token = &APP_SETTINGS.discord_bot_key;
+    let token = &APP_SETTINGS.read().await.discord_bot_key;
 
     let http = Http::new(&token);
 
