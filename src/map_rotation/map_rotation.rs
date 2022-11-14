@@ -4,6 +4,6 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct MapRotation {
-    current: CurrentMap,
-    next: NextMap,
+    pub current: CurrentMap,
+    pub next: NextMap,
 }

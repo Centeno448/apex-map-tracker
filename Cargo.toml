@@ -9,3 +9,7 @@ tokio = { version = "1", features = ["full"] }
 dotenv = "0.15.0"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0"
+serenity = { version = "0.11", features = ["cache", "framework", "standard_framework", "rustls_backend"] }
+lazy_static = "1.4"
+tracing = "0.1.23"
+tracing-subscriber = "0.3.16"

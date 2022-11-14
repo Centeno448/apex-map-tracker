@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 pub enum MapRotationCode {
     #[serde(rename = "worlds_edge_rotation")]
     WorldsEdgeRotation,
