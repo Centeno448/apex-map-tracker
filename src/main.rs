@@ -1,3 +1,6 @@
+extern crate log;
+extern crate simplelog;
+
 use config::AppConfig;
 use dotenv;
 use lazy_static::lazy_static;
@@ -11,9 +14,11 @@ use serenity::http::Http;
 use serenity::model::event::ResumedEvent;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
+use simplelog::{Config, LevelFilter, WriteLogger};
 use tracing::{error, info};
 
 use std::collections::HashSet;
+use std::fs::File;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -52,6 +57,13 @@ struct General;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().expect("Failed to load environment variables");
+
+    WriteLogger::init(
+        LevelFilter::Info,
+        Config::default(),
+        File::create("apex_map_tracker.log").unwrap(),
+    )
+    .expect("Failed to initialize logger");
 
     let token = &APP_SETTINGS.read().await.discord_bot_key;
 
