@@ -18,6 +18,7 @@ use simplelog::{Config, LevelFilter, WriteLogger};
 use tracing::{error, info};
 
 use std::collections::HashSet;
+use std::env;
 use std::fs::File;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -58,10 +59,12 @@ struct General;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().expect("Failed to load environment variables");
 
+    let base_path = env::var("AMC_BASE_LOG_PATH").unwrap();
+
     WriteLogger::init(
         LevelFilter::Info,
         Config::default(),
-        File::create("apex_map_tracker.log").unwrap(),
+        File::create(format!("{}/apex-map-tracker.log", base_path)).unwrap(),
     )
     .expect("Failed to initialize logger");
 
