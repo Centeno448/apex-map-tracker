@@ -1,2 +1,4 @@
-pub use maps::{olympus, OLYMPUS_COMMAND, OLYMPUS_COMMAND_OPTIONS};
+pub use maps::*;
+pub use misc::*;
 mod maps;
+mod misc;
