@@ -22,8 +22,8 @@ impl fmt::Display for MapRotationCode {
         // is very similar to `println!`.
 
         match self {
-            Self::WorldsEdgeRotation => write!(f, "{}", "Worlds Edge"),
-            Self::StormPointRotation => write!(f, "{}", "Storm Point"),
+            Self::WorldsEdgeRotation => write!(f, "{}", "Fin del Mundo"),
+            Self::StormPointRotation => write!(f, "{}", "Punto Tormenta"),
             Self::OlympusRotation => write!(f, "{}", "Olympus"),
             Self::BrokenMoonRotation => write!(f, "{}", "Broken Moon"),
         }

@@ -1,6 +1,6 @@
 pub use map_rotation::MapRotation;
 pub use map_rotation_code::MapRotationCode;
-pub use utils::calculate_time_to_map_in_minutes;
+pub use utils::is_map_available;
 
 mod current_map;
 mod map_rotation;

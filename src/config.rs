@@ -1,3 +1,4 @@
+use crate::map_rotation::MapRotationCode;
 use std::env;
 
 #[derive(Debug)]
@@ -6,6 +7,7 @@ pub struct AppConfig {
     pub api_key: String,
     pub discord_bot_key: String,
     pub map_rotation_url: String,
+    pub season_map_rotation: [MapRotationCode; 3],
 }
 
 impl AppConfig {
@@ -18,11 +20,18 @@ impl AppConfig {
 
         let map_rotation_url = format!("{}/maprotation?auth={}", api_base_url, api_key);
 
+        let season_map_rotation = [
+            MapRotationCode::BrokenMoonRotation,
+            MapRotationCode::OlympusRotation,
+            MapRotationCode::WorldsEdgeRotation,
+        ];
+
         AppConfig {
             api_base_url,
             api_key,
             discord_bot_key,
             map_rotation_url,
+            season_map_rotation,
         }
     }
 }
