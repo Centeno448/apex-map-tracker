@@ -17,7 +17,12 @@ pub async fn help(ctx: &Context, msg: &Message) -> CommandResult {
                         (
                             "e?olympus",
                             "Calcula el tiempo hasta que Olympus esté en la rotación.",
-                            true,
+                            false,
+                        ),
+                        (
+                            "e?moon",
+                            "Calcula el tiempo hasta que Broken Moon esté en la rotación.",
+                            false,
                         ),
                         (
                             "e?fin",

@@ -5,7 +5,9 @@ use config::AppConfig;
 use dotenv;
 use lazy_static::lazy_static;
 
-use commands::{HELP_COMMAND, OLYMPUS_COMMAND};
+use commands::{
+    FIN_COMMAND, HELP_COMMAND, KINGS_COMMAND, MOON_COMMAND, OLYMPUS_COMMAND, PUNTO_COMMAND,
+};
 use serenity::async_trait;
 use serenity::client::bridge::gateway::ShardManager;
 use serenity::framework::standard::macros::group;
@@ -52,7 +54,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(olympus, help)]
+#[commands(olympus, moon, fin, kings, punto, help)]
 struct General;
 
 #[tokio::main]

@@ -14,3 +14,39 @@ pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
 
     Ok(())
 }
+
+#[command]
+pub async fn fin(ctx: &Context, msg: &Message) -> CommandResult {
+    let response = is_map_available(&MapRotationCode::WorldsEdgeRotation).await?;
+
+    msg.channel_id.say(&ctx.http, response).await?;
+
+    Ok(())
+}
+
+#[command]
+pub async fn kings(ctx: &Context, msg: &Message) -> CommandResult {
+    let response = is_map_available(&MapRotationCode::KingsCanyonRotation).await?;
+
+    msg.channel_id.say(&ctx.http, response).await?;
+
+    Ok(())
+}
+
+#[command]
+pub async fn punto(ctx: &Context, msg: &Message) -> CommandResult {
+    let response = is_map_available(&MapRotationCode::StormPointRotation).await?;
+
+    msg.channel_id.say(&ctx.http, response).await?;
+
+    Ok(())
+}
+
+#[command]
+pub async fn moon(ctx: &Context, msg: &Message) -> CommandResult {
+    let response = is_map_available(&MapRotationCode::BrokenMoonRotation).await?;
+
+    msg.channel_id.say(&ctx.http, response).await?;
+
+    Ok(())
+}

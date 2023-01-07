@@ -12,6 +12,8 @@ pub enum MapRotationCode {
     OlympusRotation,
     #[serde(rename = "broken_moon_rotation")]
     BrokenMoonRotation,
+    #[serde(rename = "kings_canyon_rotation")]
+    KingsCanyonRotation,
 }
 
 impl fmt::Display for MapRotationCode {
@@ -26,6 +28,7 @@ impl fmt::Display for MapRotationCode {
             Self::StormPointRotation => write!(f, "{}", "Punto Tormenta"),
             Self::OlympusRotation => write!(f, "{}", "Olympus"),
             Self::BrokenMoonRotation => write!(f, "{}", "Broken Moon"),
+            Self::KingsCanyonRotation => write!(f, "{}", "Kings Canyon"),
         }
     }
 }
