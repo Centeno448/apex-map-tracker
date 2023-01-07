@@ -47,3 +47,22 @@ pub async fn is_map_available(map: &MapRotationCode) -> Result<String, Error> {
         ));
     }
 }
+
+pub async fn current_map() -> Result<String, Error> {
+    let client = reqwest::Client::new();
+    let request_url = &APP_SETTINGS.read().await.map_rotation_url;
+
+    let resp = client
+        .get(request_url)
+        .send()
+        .await?
+        .json::<MapRotation>()
+        .await?;
+
+    let current_map = resp.current.code;
+    let time_left = &resp.current.remaining_timer;
+
+    Ok(format!(
+        "El mapa actual es {current_map}. Tiempo restante: {time_left}"
+    ))
+}

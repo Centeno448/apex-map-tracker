@@ -1,5 +1,5 @@
-use crate::map_rotation::is_map_available;
 use crate::map_rotation::MapRotationCode;
+use crate::map_rotation::{current_map, is_map_available};
 
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::CommandResult;
@@ -45,6 +45,15 @@ pub async fn punto(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 pub async fn moon(ctx: &Context, msg: &Message) -> CommandResult {
     let response = is_map_available(&MapRotationCode::BrokenMoonRotation).await?;
+
+    msg.channel_id.say(&ctx.http, response).await?;
+
+    Ok(())
+}
+
+#[command]
+pub async fn map(ctx: &Context, msg: &Message) -> CommandResult {
+    let response = current_map().await?;
 
     msg.channel_id.say(&ctx.http, response).await?;
 
