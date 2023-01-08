@@ -3,7 +3,6 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct CurrentMap {
-    pub map: String,
     pub code: MapRotationCode,
     #[serde(rename = "remainingMins")]
     pub remaining_mins: u8,
