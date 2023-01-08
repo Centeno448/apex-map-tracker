@@ -66,3 +66,44 @@ pub async fn current_map() -> Result<String, Error> {
         "El mapa actual es {current_map}. Tiempo restante: {time_left}"
     ))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::calculate_time_to_map_in_minutes;
+
+    mod calculate_time_to_map_in_minutes {
+        use super::*;
+        use crate::map_rotation::{next_map::NextMap, MapRotationCode};
+
+        #[test]
+        fn returns_current_map_remaining_when_search_is_next_map() {
+            let next_map = NextMap {
+                code: MapRotationCode::BrokenMoonRotation,
+                duration_in_minutes: 100,
+            };
+            let actual = calculate_time_to_map_in_minutes(
+                &MapRotationCode::BrokenMoonRotation,
+                &10,
+                &next_map,
+            );
+            let expected = 10;
+
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn returns_sum_of_current_map_remaining_and_next_map_duration_when_search_is_not_next_map()
+        {
+            let next_map = NextMap {
+                code: MapRotationCode::BrokenMoonRotation,
+                duration_in_minutes: 100,
+            };
+            let actual =
+                calculate_time_to_map_in_minutes(&MapRotationCode::OlympusRotation, &10, &next_map);
+
+            let expected = 110;
+
+            assert_eq!(actual, expected);
+        }
+    }
+}
