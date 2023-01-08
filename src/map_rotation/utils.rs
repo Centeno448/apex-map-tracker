@@ -12,7 +12,7 @@ fn calculate_time_to_map_in_minutes(
     cm_remaining + next_map.duration_in_minutes
 }
 
-pub async fn is_map_available(
+pub fn is_map_available(
     rotation: MapRotation,
     map: &MapRotationCode,
     season_map_rotation: &[MapRotationCode; 3],
@@ -39,7 +39,7 @@ pub async fn is_map_available(
     }
 }
 
-pub async fn current_map(rotation: MapRotation) -> String {
+pub fn current_map(rotation: MapRotation) -> String {
     let current_map = rotation.current.code;
     let time_left = &rotation.current.remaining_timer;
 
@@ -93,8 +93,8 @@ mod tests {
 
         use super::current_map;
 
-        #[actix_rt::test]
-        async fn returns_the_correct_string() {
+        #[test]
+        fn returns_the_correct_string() {
             let rotation = MapRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
@@ -108,7 +108,7 @@ mod tests {
             };
 
             let expected = "El mapa actual es Broken Moon. Tiempo restante: 00:10:00";
-            let actual = current_map(rotation).await;
+            let actual = current_map(rotation);
 
             assert_eq!(expected, actual);
         }
@@ -121,8 +121,8 @@ mod tests {
 
         use super::is_map_available;
 
-        #[actix_rt::test]
-        async fn when_map_is_not_in_rotation_returns_the_correct_string() {
+        #[test]
+        fn when_map_is_not_in_rotation_returns_the_correct_string() {
             let rotation = MapRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
@@ -146,14 +146,13 @@ mod tests {
                 rotation,
                 &MapRotationCode::StormPointRotation,
                 &season_map_rotation,
-            )
-            .await;
+            );
 
             assert_eq!(expected, actual);
         }
 
-        #[actix_rt::test]
-        async fn when_search_is_current_map_returns_the_correct_string() {
+        #[test]
+        fn when_search_is_current_map_returns_the_correct_string() {
             let rotation = MapRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
@@ -177,14 +176,13 @@ mod tests {
                 rotation,
                 &MapRotationCode::BrokenMoonRotation,
                 &season_map_rotation,
-            )
-            .await;
+            );
 
             assert_eq!(expected, actual);
         }
 
-        #[actix_rt::test]
-        async fn when_search_is_not_current_map_returns_the_correct_string() {
+        #[test]
+        fn when_search_is_not_current_map_returns_the_correct_string() {
             let rotation = MapRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
@@ -208,8 +206,7 @@ mod tests {
                 rotation,
                 &MapRotationCode::WorldsEdgeRotation,
                 &season_map_rotation,
-            )
-            .await;
+            );
 
             assert_eq!(expected, actual);
         }

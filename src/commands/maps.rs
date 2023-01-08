@@ -12,12 +12,12 @@ use serenity::prelude::*;
 pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
     let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
+
     let response = is_map_available(
         map_rotation,
         &MapRotationCode::OlympusRotation,
         season_map_rotation,
-    )
-    .await;
+    );
 
     msg.channel_id.say(&ctx.http, response).await?;
 
@@ -28,12 +28,12 @@ pub async fn olympus(ctx: &Context, msg: &Message) -> CommandResult {
 pub async fn fin(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
     let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
+
     let response = is_map_available(
         map_rotation,
         &MapRotationCode::WorldsEdgeRotation,
         season_map_rotation,
-    )
-    .await;
+    );
 
     msg.channel_id.say(&ctx.http, response).await?;
 
@@ -44,12 +44,12 @@ pub async fn fin(ctx: &Context, msg: &Message) -> CommandResult {
 pub async fn kings(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
     let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
+
     let response = is_map_available(
         map_rotation,
         &MapRotationCode::KingsCanyonRotation,
         season_map_rotation,
-    )
-    .await;
+    );
 
     msg.channel_id.say(&ctx.http, response).await?;
 
@@ -60,12 +60,12 @@ pub async fn kings(ctx: &Context, msg: &Message) -> CommandResult {
 pub async fn punto(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
     let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
+
     let response = is_map_available(
         map_rotation,
         &MapRotationCode::StormPointRotation,
         season_map_rotation,
-    )
-    .await;
+    );
 
     msg.channel_id.say(&ctx.http, response).await?;
 
@@ -76,12 +76,12 @@ pub async fn punto(ctx: &Context, msg: &Message) -> CommandResult {
 pub async fn moon(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
     let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
+
     let response = is_map_available(
         map_rotation,
         &MapRotationCode::BrokenMoonRotation,
         season_map_rotation,
-    )
-    .await;
+    );
 
     msg.channel_id.say(&ctx.http, response).await?;
 
@@ -92,7 +92,7 @@ pub async fn moon(ctx: &Context, msg: &Message) -> CommandResult {
 pub async fn map(ctx: &Context, msg: &Message) -> CommandResult {
     let map_rotation = map_rotation_request().await?;
 
-    let response = current_map(map_rotation).await;
+    let response = current_map(map_rotation);
 
     msg.channel_id.say(&ctx.http, response).await?;
 
