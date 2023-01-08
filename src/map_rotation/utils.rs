@@ -1,7 +1,5 @@
 use super::{next_map::NextMap, MapRotation, MapRotationCode};
 
-use crate::APP_SETTINGS;
-
 fn calculate_time_to_map_in_minutes(
     map: &MapRotationCode,
     cm_remaining: &u8,
@@ -14,9 +12,11 @@ fn calculate_time_to_map_in_minutes(
     cm_remaining + next_map.duration_in_minutes
 }
 
-pub async fn is_map_available(rotation: MapRotation, map: &MapRotationCode) -> String {
-    let season_map_rotation = &APP_SETTINGS.read().await.season_map_rotation;
-
+pub async fn is_map_available(
+    rotation: MapRotation,
+    map: &MapRotationCode,
+    season_map_rotation: &[MapRotationCode; 3],
+) -> String {
     if !season_map_rotation.contains(map) {
         return format!("{map} no está en la rotación de esta temporada :C");
     }
@@ -48,7 +48,7 @@ pub async fn current_map(rotation: MapRotation) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{calculate_time_to_map_in_minutes, current_map};
+    use super::{calculate_time_to_map_in_minutes, current_map, is_map_available};
 
     mod calculate_time_to_map_in_minutes {
         use super::calculate_time_to_map_in_minutes;
@@ -109,6 +109,107 @@ mod tests {
 
             let expected = "El mapa actual es Broken Moon. Tiempo restante: 00:10:00";
             let actual = current_map(rotation).await;
+
+            assert_eq!(expected, actual);
+        }
+    }
+
+    mod is_map_available {
+        use crate::map_rotation::{
+            current_map::CurrentMap, next_map::NextMap, MapRotation, MapRotationCode,
+        };
+
+        use super::is_map_available;
+
+        #[actix_rt::test]
+        async fn when_map_is_not_in_rotation_returns_the_correct_string() {
+            let rotation = MapRotation {
+                current: CurrentMap {
+                    code: MapRotationCode::BrokenMoonRotation,
+                    remaining_mins: 10,
+                    remaining_timer: String::from("00:10:00"),
+                },
+                next: NextMap {
+                    code: MapRotationCode::KingsCanyonRotation,
+                    duration_in_minutes: 1,
+                },
+            };
+
+            let season_map_rotation = [
+                MapRotationCode::BrokenMoonRotation,
+                MapRotationCode::OlympusRotation,
+                MapRotationCode::WorldsEdgeRotation,
+            ];
+
+            let expected = "Punto Tormenta no está en la rotación de esta temporada :C";
+            let actual = is_map_available(
+                rotation,
+                &MapRotationCode::StormPointRotation,
+                &season_map_rotation,
+            )
+            .await;
+
+            assert_eq!(expected, actual);
+        }
+
+        #[actix_rt::test]
+        async fn when_search_is_current_map_returns_the_correct_string() {
+            let rotation = MapRotation {
+                current: CurrentMap {
+                    code: MapRotationCode::BrokenMoonRotation,
+                    remaining_mins: 10,
+                    remaining_timer: String::from("00:10:00"),
+                },
+                next: NextMap {
+                    code: MapRotationCode::KingsCanyonRotation,
+                    duration_in_minutes: 1,
+                },
+            };
+
+            let season_map_rotation = [
+                MapRotationCode::BrokenMoonRotation,
+                MapRotationCode::OlympusRotation,
+                MapRotationCode::WorldsEdgeRotation,
+            ];
+
+            let expected = "En efecto, está Broken Moon. Tiempo restante: 00:10:00";
+            let actual = is_map_available(
+                rotation,
+                &MapRotationCode::BrokenMoonRotation,
+                &season_map_rotation,
+            )
+            .await;
+
+            assert_eq!(expected, actual);
+        }
+
+        #[actix_rt::test]
+        async fn when_search_is_not_current_map_returns_the_correct_string() {
+            let rotation = MapRotation {
+                current: CurrentMap {
+                    code: MapRotationCode::BrokenMoonRotation,
+                    remaining_mins: 10,
+                    remaining_timer: String::from("00:10:00"),
+                },
+                next: NextMap {
+                    code: MapRotationCode::KingsCanyonRotation,
+                    duration_in_minutes: 1,
+                },
+            };
+
+            let season_map_rotation = [
+                MapRotationCode::BrokenMoonRotation,
+                MapRotationCode::OlympusRotation,
+                MapRotationCode::WorldsEdgeRotation,
+            ];
+
+            let expected = "Nel, actualmente está Broken Moon. Fin del Mundo estára en 11 minutos.";
+            let actual = is_map_available(
+                rotation,
+                &MapRotationCode::WorldsEdgeRotation,
+                &season_map_rotation,
+            )
+            .await;
 
             assert_eq!(expected, actual);
         }
