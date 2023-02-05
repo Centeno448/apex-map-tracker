@@ -1,7 +1,7 @@
 extern crate log;
 extern crate simplelog;
 
-use config::AppConfig;
+use configuration::Settings;
 use dotenv;
 use lazy_static::lazy_static;
 
@@ -27,12 +27,11 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 mod commands;
-mod config;
+mod configuration;
 mod map_rotation;
 
 lazy_static! {
-    pub static ref APP_SETTINGS: Arc<RwLock<AppConfig>> =
-        Arc::new(RwLock::new(AppConfig::default()));
+    pub static ref APP_SETTINGS: Arc<RwLock<Settings>> = Arc::new(RwLock::new(Settings::default()));
 }
 
 pub struct ShardManagerContainer;

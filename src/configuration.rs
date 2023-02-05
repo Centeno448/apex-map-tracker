@@ -1,8 +1,8 @@
 use crate::map_rotation::MapRotationCode;
 use std::env;
 
-#[derive(Debug)]
-pub struct AppConfig {
+#[derive(Debug, serde::Deserialize)]
+pub struct Settings {
     pub api_base_url: String,
     pub api_key: String,
     pub discord_bot_key: String,
@@ -10,7 +10,14 @@ pub struct AppConfig {
     pub season_map_rotation: [MapRotationCode; 3],
 }
 
-impl AppConfig {
+pub fn get_configuration() -> Result<Settings, config::ConfigError> {
+    let builder = config::Config::builder()
+        .add_source(config::Environment::with_prefix("amc").separator("__"));
+
+    builder.build()?.try_deserialize()
+}
+
+impl Settings {
     pub fn default() -> Self {
         let api_base_url =
             env::var("AMC_BASE_API_URL").expect("Could not find AMC_BASE_API_URL in env variables");
@@ -26,7 +33,7 @@ impl AppConfig {
             MapRotationCode::WorldsEdgeRotation,
         ];
 
-        AppConfig {
+        Settings {
             api_base_url,
             api_key,
             discord_bot_key,
