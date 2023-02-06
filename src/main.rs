@@ -1,19 +1,11 @@
 extern crate log;
 extern crate simplelog;
 
-use apex_map_tracker::configuration::Settings;
+use apex_map_tracker::configuration::get_configuration;
 use apex_map_tracker::startup::{build_serenity_client, ShardManagerContainer};
 use apex_map_tracker::telemetry::init_logger;
 use dotenv;
-use lazy_static::lazy_static;
 use tracing::error;
-
-use std::sync::Arc;
-use tokio::sync::RwLock;
-
-lazy_static! {
-    pub static ref APP_SETTINGS: Arc<RwLock<Settings>> = Arc::new(RwLock::new(Settings::default()));
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -21,7 +13,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     init_logger();
 
-    let mut client = build_serenity_client()
+    let app_settings = get_configuration();
+
+    let mut client = build_serenity_client(app_settings)
         .await
         .expect("Failed to create serenity client.");
 

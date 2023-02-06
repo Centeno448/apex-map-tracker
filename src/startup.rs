@@ -1,22 +1,14 @@
-use serenity::client::bridge::gateway::ShardManager;
-use serenity::framework::StandardFramework;
-use serenity::http::Http;
-use std::collections::HashSet;
-use std::sync::Arc;
-
-use crate::commands::{
-    FIN_COMMAND, HELP_COMMAND, KINGS_COMMAND, MAP_COMMAND, MOON_COMMAND, OLYMPUS_COMMAND,
-    PUNTO_COMMAND,
-};
-use crate::configuration::Settings;
 use serenity::async_trait;
-use serenity::framework::standard::macros::group;
-
+use serenity::client::bridge::gateway::ShardManager;
 use serenity::model::event::ResumedEvent;
 use serenity::model::gateway::Ready;
-use tracing::info;
-
+use serenity::model::prelude::Message;
 use serenity::prelude::*;
+use std::sync::Arc;
+use tracing::{error, info};
+
+use crate::commands::{handle_command, Command};
+use crate::configuration::Settings;
 
 pub struct ShardManagerContainer;
 
@@ -37,41 +29,43 @@ impl EventHandler for Handler {
     async fn resume(&self, _: Context, _: ResumedEvent) {
         info!("Resumed");
     }
+
+    async fn message(&self, ctx: Context, msg: Message) {
+        let prefix = "e?";
+        if let Some(command_str) = msg.content.strip_prefix(prefix) {
+            if let Some(command) = Command::parse(command_str) {
+                match handle_command(&command, &self.app_settings).await {
+                    Ok(response) => match msg.channel_id.say(&ctx, response).await {
+                        Ok(_) => (),
+                        Err(e) => {
+                            let error_message =
+                                format!("Failed to send response with error: {:?}", e);
+                            error!(error_message);
+                        }
+                    },
+                    Err(e) => {
+                        let error_message = format!(
+                            "Failed to execute command {prefix}{} with error: {:?}",
+                            &command, e
+                        );
+                        error!(error_message);
+                    }
+                }
+            }
+        }
+    }
 }
 
-#[group]
-#[commands(olympus, moon, fin, kings, punto, map, help)]
-struct General;
-
-pub async fn build_serenity_client() -> Result<Client, SerenityError> {
-    let token = "";
-
-    let http = Http::new(&token);
-
-    let (owners, _bot_id) = match http.get_current_application_info().await {
-        Ok(info) => {
-            let mut owners = HashSet::new();
-            owners.insert(info.owner.id);
-
-            (owners, info.id)
-        }
-        Err(why) => panic!("Could not access application info: {:?}", why),
-    };
-
-    let framework = StandardFramework::new()
-        .configure(|c| c.owners(owners).prefix("e?"))
-        .group(&GENERAL_GROUP);
+pub async fn build_serenity_client(app_settings: Settings) -> Result<Client, SerenityError> {
+    let token = app_settings.discord_bot_key.clone();
 
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;
 
-    let handler = Handler {
-        app_settings: Settings::default(),
-    };
+    let handler = Handler { app_settings };
 
     Client::builder(&token, intents)
-        .framework(framework)
         .event_handler(handler)
         .await
 }
