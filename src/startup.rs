@@ -44,7 +44,7 @@ impl EventHandler for Handler {
 struct General;
 
 pub async fn build_serenity_client() -> Result<Client, SerenityError> {
-    let token = "OTc4NDQ0ODUyOTM1MTM5Mzg4.G2BWMb.RKbPlmCWsrNrQhNBeip7r_DPYVjpcR-pqKsL-Y";
+    let token = "";
 
     let http = Http::new(&token);
 
