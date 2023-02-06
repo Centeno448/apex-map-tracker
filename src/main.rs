@@ -9,11 +9,11 @@ use tracing::error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    dotenv::dotenv().expect("Failed to load environment variables");
+    dotenv::dotenv().expect("Failed to load .env file");
 
-    init_logger();
+    let app_settings = get_configuration().expect("Failed to load configuration.");
 
-    let app_settings = get_configuration();
+    init_logger(&app_settings);
 
     if let Err(e) = run(app_settings).await?.start().await {
         error!("Failed to start client with error: {:?}", e);

@@ -57,7 +57,7 @@ impl EventHandler for Handler {
 }
 
 pub async fn run(app_settings: Settings) -> Result<Client, SerenityError> {
-    let token = app_settings.discord_bot_key.clone();
+    let token = app_settings.application.discord_bot_key.clone();
 
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES

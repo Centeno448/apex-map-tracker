@@ -1,9 +1,10 @@
 use simplelog::{Config, LevelFilter, WriteLogger};
-use std::env;
 use std::fs::File;
 
-pub fn init_logger() {
-    let base_path = env::var("AMC_BASE_LOG_PATH").unwrap();
+use crate::configuration::Settings;
+
+pub fn init_logger(configuration: &Settings) {
+    let base_path = configuration.application.base_log_path.clone();
 
     WriteLogger::init(
         LevelFilter::Info,
