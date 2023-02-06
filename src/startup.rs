@@ -56,7 +56,7 @@ impl EventHandler for Handler {
     }
 }
 
-pub async fn build_serenity_client(app_settings: Settings) -> Result<Client, SerenityError> {
+pub async fn run(app_settings: Settings) -> Result<Client, SerenityError> {
     let token = app_settings.discord_bot_key.clone();
 
     let intents = GatewayIntents::GUILD_MESSAGES
@@ -65,7 +65,23 @@ pub async fn build_serenity_client(app_settings: Settings) -> Result<Client, Ser
 
     let handler = Handler { app_settings };
 
-    Client::builder(&token, intents)
+    let client = Client::builder(&token, intents)
         .event_handler(handler)
-        .await
+        .await?;
+
+    {
+        let mut data = client.data.write().await;
+        data.insert::<ShardManagerContainer>(client.shard_manager.clone());
+    }
+
+    let shard_manager = client.shard_manager.clone();
+
+    tokio::spawn(async move {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("Could not register ctrl+c handler");
+        shard_manager.lock().await.shutdown_all().await;
+    });
+
+    Ok(client)
 }
