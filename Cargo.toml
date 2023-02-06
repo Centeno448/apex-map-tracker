@@ -37,3 +37,14 @@ features = [
 "http",
 "utils"
 ]
+
+[dependencies.sqlx]
+version = "0.6.2"
+default-features = false
+features = [
+"runtime-actix-rustls",
+"macros",
+"mysql",
+"migrate",
+"offline"
+]
