@@ -1,0 +1,28 @@
+{
+  "db": "MySQL",
+  "ada588a8778548a2ec71be74f062bf387748324c0df9a397d34846361df2a3f5": {
+    "describe": {
+      "columns": [
+        {
+          "name": "code",
+          "ordinal": 0,
+          "type_info": {
+            "char_set": 224,
+            "flags": {
+              "bits": 4113
+            },
+            "max_size": 1020,
+            "type": "Blob"
+          }
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Right": 0
+      }
+    },
+    "query": "\n        SELECT code FROM map_rotations\n    "
+  }
+}

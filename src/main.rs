@@ -1,23 +1,26 @@
-extern crate log;
-extern crate simplelog;
-
 use apex_map_tracker::configuration::get_configuration;
 use apex_map_tracker::startup::run;
 use apex_map_tracker::telemetry::init_logger;
 use dotenv;
-use tracing::error;
+use sqlx::mysql::MySqlPoolOptions;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    dotenv::dotenv().expect("Failed to load environment variables");
+    dotenv::dotenv().expect("Failed to load .env file");
 
-    init_logger();
+    let configuration = get_configuration().expect("Failed to load configuration.");
 
-    let app_settings = get_configuration();
+    let connection_pool =
+        MySqlPoolOptions::new().connect_lazy_with(configuration.database.with_db());
 
-    if let Err(e) = run(app_settings).await?.start().await {
-        error!("Failed to start client with error: {:?}", e);
-    }
+    sqlx::migrate!("./migrations")
+        .run(&connection_pool)
+        .await
+        .expect("Failed to migrate the database");
+
+    init_logger(&configuration);
+
+    run(configuration, connection_pool).await?.start().await?;
 
     Ok(())
 }

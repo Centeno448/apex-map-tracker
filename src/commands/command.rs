@@ -1,6 +1,5 @@
+use sqlx::MySqlPool;
 use std::fmt::Display;
-
-use reqwest::Error;
 
 use crate::commands::maps::*;
 use crate::configuration::Settings;
@@ -42,16 +41,26 @@ impl Display for Command {
     }
 }
 
-pub async fn handle_command(command: &Command, app_settings: &Settings) -> Result<String, Error> {
+pub async fn handle_command(
+    command: &Command,
+    app_settings: &Settings,
+    db_pool: &MySqlPool,
+) -> Result<String, CommandError> {
     match command {
-        Command::OlympusCommand => time_until(MapRotationCode::OlympusRotation, app_settings).await,
-        Command::MoonCommand => time_until(MapRotationCode::BrokenMoonRotation, app_settings).await,
-        Command::FinCommand => time_until(MapRotationCode::WorldsEdgeRotation, app_settings).await,
+        Command::OlympusCommand => {
+            time_until(MapRotationCode::OlympusRotation, app_settings, db_pool).await
+        }
+        Command::MoonCommand => {
+            time_until(MapRotationCode::BrokenMoonRotation, app_settings, db_pool).await
+        }
+        Command::FinCommand => {
+            time_until(MapRotationCode::WorldsEdgeRotation, app_settings, db_pool).await
+        }
         Command::KingsCommand => {
-            time_until(MapRotationCode::KingsCanyonRotation, app_settings).await
+            time_until(MapRotationCode::KingsCanyonRotation, app_settings, db_pool).await
         }
         Command::PuntoCommand => {
-            time_until(MapRotationCode::StormPointRotation, app_settings).await
+            time_until(MapRotationCode::StormPointRotation, app_settings, db_pool).await
         }
         Command::MapCommand => map(app_settings).await,
     }

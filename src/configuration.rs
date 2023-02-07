@@ -1,35 +1,53 @@
-use crate::map_rotation::MapRotationCode;
-use std::env;
+use serde_aux::field_attributes::deserialize_number_from_string;
+use sqlx::mysql::{MySqlConnectOptions, MySqlSslMode};
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Settings {
-    pub api_base_url: String,
-    pub api_key: String,
-    pub discord_bot_key: String,
-    pub map_rotation_url: String,
-    pub season_map_rotation: [MapRotationCode; 3],
+    pub application: ApplicationSettings,
+    pub database: DatabaseSettings,
 }
 
-pub fn get_configuration() -> Settings {
-    let api_base_url =
-        env::var("AMC_BASE_API_URL").expect("Could not find AMC_BASE_API_URL in env variables");
-    let api_key = env::var("AMC_API_KEY").expect("Could not find AMC_API_KEY in env variables");
-    let discord_bot_key = env::var("AMC_DISCORD_BOT_TOKEN")
-        .expect("Could not find AMC_DISCORD_BOT_TOKEN in env variables");
+#[derive(Debug, serde::Deserialize)]
+pub struct ApplicationSettings {
+    pub api_key: String,
+    pub discord_bot_key: String,
+    pub base_log_path: String,
+}
 
-    let map_rotation_url = format!("{}/maprotation?auth={}", api_base_url, api_key);
+#[derive(Debug, serde::Deserialize)]
+pub struct DatabaseSettings {
+    pub username: String,
+    pub password: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub port: u16,
+    pub host: String,
+    pub name: String,
+    pub require_ssl: bool,
+}
 
-    let season_map_rotation = [
-        MapRotationCode::BrokenMoonRotation,
-        MapRotationCode::OlympusRotation,
-        MapRotationCode::WorldsEdgeRotation,
-    ];
-
-    Settings {
-        api_base_url,
-        api_key,
-        discord_bot_key,
-        map_rotation_url,
-        season_map_rotation,
+impl DatabaseSettings {
+    pub fn without_db(&self) -> MySqlConnectOptions {
+        let ssl_mode = if self.require_ssl {
+            MySqlSslMode::Required
+        } else {
+            MySqlSslMode::Preferred
+        };
+        MySqlConnectOptions::new()
+            .host(&self.host)
+            .username(&self.username)
+            .password(&self.password)
+            .port(self.port)
+            .ssl_mode(ssl_mode)
     }
+
+    pub fn with_db(&self) -> MySqlConnectOptions {
+        self.without_db().database(&self.name)
+    }
+}
+
+pub fn get_configuration() -> Result<Settings, config::ConfigError> {
+    let builder = config::Config::builder()
+        .add_source(config::Environment::with_prefix("AMT").separator("__"));
+
+    builder.build()?.try_deserialize()
 }
