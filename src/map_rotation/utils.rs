@@ -15,7 +15,7 @@ fn calculate_time_to_map_in_minutes(
 pub fn is_map_available(
     rotation: MapRotation,
     map: &MapRotationCode,
-    season_map_rotation: &[MapRotationCode; 3],
+    season_map_rotation: &Vec<MapRotationCode>,
 ) -> String {
     if !season_map_rotation.contains(map) {
         return format!("{map} no está en la rotación de esta temporada :C");
@@ -135,7 +135,7 @@ mod tests {
                 },
             };
 
-            let season_map_rotation = [
+            let season_map_rotation = vec![
                 MapRotationCode::BrokenMoonRotation,
                 MapRotationCode::OlympusRotation,
                 MapRotationCode::WorldsEdgeRotation,
@@ -165,7 +165,7 @@ mod tests {
                 },
             };
 
-            let season_map_rotation = [
+            let season_map_rotation = vec![
                 MapRotationCode::BrokenMoonRotation,
                 MapRotationCode::OlympusRotation,
                 MapRotationCode::WorldsEdgeRotation,
@@ -195,7 +195,7 @@ mod tests {
                 },
             };
 
-            let season_map_rotation = [
+            let season_map_rotation = vec![
                 MapRotationCode::BrokenMoonRotation,
                 MapRotationCode::OlympusRotation,
                 MapRotationCode::WorldsEdgeRotation,

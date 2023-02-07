@@ -1,5 +1,4 @@
 use core::fmt;
-
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -14,6 +13,19 @@ pub enum MapRotationCode {
     BrokenMoonRotation,
     #[serde(rename = "kings_canyon_rotation")]
     KingsCanyonRotation,
+}
+
+impl From<&str> for MapRotationCode {
+    fn from(value: &str) -> Self {
+        match value {
+            "WorldsEdgeRotation" => MapRotationCode::WorldsEdgeRotation,
+            "StormPointRotation" => MapRotationCode::StormPointRotation,
+            "OlympusRotation" => MapRotationCode::OlympusRotation,
+            "BrokenMoonRotation" => MapRotationCode::BrokenMoonRotation,
+            "KingsCanyonRotation" => MapRotationCode::KingsCanyonRotation,
+            _ => MapRotationCode::KingsCanyonRotation,
+        }
+    }
 }
 
 impl fmt::Display for MapRotationCode {

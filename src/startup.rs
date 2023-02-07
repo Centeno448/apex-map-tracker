@@ -4,6 +4,7 @@ use serenity::model::event::ResumedEvent;
 use serenity::model::gateway::Ready;
 use serenity::model::prelude::Message;
 use serenity::prelude::*;
+use sqlx::MySqlPool;
 use std::sync::Arc;
 use tracing::{error, info};
 
@@ -18,6 +19,7 @@ impl TypeMapKey for ShardManagerContainer {
 
 struct Handler {
     app_settings: Settings,
+    db_pool: MySqlPool,
 }
 
 #[async_trait]
@@ -34,7 +36,7 @@ impl EventHandler for Handler {
         let prefix = "e?";
         if let Some(command_str) = msg.content.strip_prefix(prefix) {
             if let Some(command) = Command::parse(command_str) {
-                match handle_command(&command, &self.app_settings).await {
+                match handle_command(&command, &self.app_settings, &self.db_pool).await {
                     Ok(response) => match msg.channel_id.say(&ctx, response).await {
                         Ok(_) => (),
                         Err(e) => {
@@ -56,14 +58,17 @@ impl EventHandler for Handler {
     }
 }
 
-pub async fn run(app_settings: Settings) -> Result<Client, SerenityError> {
+pub async fn run(app_settings: Settings, db_pool: MySqlPool) -> Result<Client, SerenityError> {
     let token = app_settings.application.discord_bot_key.clone();
 
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;
 
-    let handler = Handler { app_settings };
+    let handler = Handler {
+        app_settings,
+        db_pool,
+    };
 
     let client = Client::builder(&token, intents)
         .event_handler(handler)
