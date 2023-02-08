@@ -47,31 +47,26 @@ impl fmt::Display for MapRotationCode {
 
 #[cfg(test)]
 mod tests {
+    use crate::map_rotation::MapRotationCode;
 
-    use super::MapRotationCode;
-
-    mod display_impl {
-        use super::MapRotationCode;
-
-        #[test]
-        fn formats_correctly() {
-            assert_eq!(
-                format!("{}", MapRotationCode::WorldsEdgeRotation),
-                "Fin del Mundo"
-            );
-            assert_eq!(
-                format!("{}", MapRotationCode::StormPointRotation),
-                "Punto Tormenta"
-            );
-            assert_eq!(format!("{}", MapRotationCode::OlympusRotation), "Olympus");
-            assert_eq!(
-                format!("{}", MapRotationCode::BrokenMoonRotation),
-                "Broken Moon"
-            );
-            assert_eq!(
-                format!("{}", MapRotationCode::KingsCanyonRotation),
-                "Kings Canyon"
-            );
-        }
+    #[test]
+    fn displays_correctly() {
+        assert_eq!(
+            format!("{}", MapRotationCode::WorldsEdgeRotation),
+            "Fin del Mundo"
+        );
+        assert_eq!(
+            format!("{}", MapRotationCode::StormPointRotation),
+            "Punto Tormenta"
+        );
+        assert_eq!(format!("{}", MapRotationCode::OlympusRotation), "Olympus");
+        assert_eq!(
+            format!("{}", MapRotationCode::BrokenMoonRotation),
+            "Broken Moon"
+        );
+        assert_eq!(
+            format!("{}", MapRotationCode::KingsCanyonRotation),
+            "Kings Canyon"
+        );
     }
 }

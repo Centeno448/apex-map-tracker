@@ -34,25 +34,32 @@ impl EventHandler for Handler {
 
     async fn message(&self, ctx: Context, msg: Message) {
         let prefix = "e?";
-        if let Some(command_str) = msg.content.strip_prefix(prefix) {
-            if let Some(command) = Command::parse(command_str) {
-                match handle_command(&command, &self.app_settings, &self.db_pool).await {
-                    Ok(response) => match msg.channel_id.say(&ctx, response).await {
-                        Ok(_) => (),
-                        Err(e) => {
-                            let error_message =
-                                format!("Failed to send response with error: {:?}", e);
-                            error!(error_message);
-                        }
-                    },
-                    Err(e) => {
-                        let error_message = format!(
-                            "Failed to execute command {prefix}{} with error: {:?}",
-                            &command, e
-                        );
-                        error!(error_message);
-                    }
-                }
+
+        let command_str = match msg.content.strip_prefix(prefix) {
+            Some(command_str) => command_str,
+            None => return (),
+        };
+
+        let command = match Command::parse(command_str) {
+            Some(command) => command,
+            None => return (),
+        };
+
+        let response = match handle_command(&command, &self.app_settings, &self.db_pool).await {
+            Ok(response) => response,
+            Err(e) => {
+                error!(
+                    "Failed to process command {prefix}{} with error: {:?}",
+                    &command, e
+                );
+                return ();
+            }
+        };
+
+        match msg.channel_id.say(&ctx, response).await {
+            Ok(_) => (),
+            Err(e) => {
+                error!("Failed to send response with error: {:?}", e);
             }
         }
     }
