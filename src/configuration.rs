@@ -1,5 +1,6 @@
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::mysql::{MySqlConnectOptions, MySqlSslMode};
+use sqlx::ConnectOptions;
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Settings {
@@ -42,7 +43,10 @@ impl DatabaseSettings {
     }
 
     pub fn with_db(&self) -> MySqlConnectOptions {
-        self.without_db().database(&self.name)
+        let mut options = self.without_db().database(&self.name);
+        options.log_statements(tracing::log::LevelFilter::Debug);
+
+        options
     }
 }
 

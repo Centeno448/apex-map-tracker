@@ -6,8 +6,7 @@ use serenity::model::prelude::Message;
 use serenity::prelude::*;
 use sqlx::MySqlPool;
 use std::sync::Arc;
-use tracing::{error, info};
-use uuid::Uuid;
+use tracing::{info_span, Instrument};
 
 use crate::commands::{handle_command, Command};
 use crate::configuration::Settings;
@@ -18,6 +17,7 @@ impl TypeMapKey for ShardManagerContainer {
     type Value = Arc<Mutex<ShardManager>>;
 }
 
+#[derive(Debug)]
 struct Handler {
     app_settings: Settings,
     db_pool: MySqlPool,
@@ -26,11 +26,14 @@ struct Handler {
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
-        info!("Connected as {}", ready.user.name);
+        tracing::info!(
+            "Connected as {} & ready to handle commands.",
+            ready.user.name
+        );
     }
 
     async fn resume(&self, _: Context, _: ResumedEvent) {
-        info!("Resumed");
+        tracing::info!("Resumed.");
     }
 
     async fn message(&self, ctx: Context, msg: Message) {
@@ -38,43 +41,39 @@ impl EventHandler for Handler {
 
         let command_str = match msg.content.strip_prefix(prefix) {
             Some(command_str) => command_str,
-            None => return (),
-        };
-
-        let command = match Command::parse(command_str) {
-            Some(command) => command,
-            None => return (),
-        };
-
-        let request_id = Uuid::new_v4();
-
-        info!(
-            "request id: {} - Handling command {prefix}{}",
-            &request_id, &command
-        );
-
-        let response = match handle_command(&command, &self.app_settings, &self.db_pool).await {
-            Ok(response) => response,
-            Err(e) => {
-                error!(
-                    "request id: {} - Failed to process command {prefix}{} with error: {:?}",
-                    &request_id, &command, e
-                );
+            None => {
                 return ();
             }
         };
 
-        match msg.channel_id.say(&ctx, response).await {
-            Ok(_) => (),
-            Err(e) => {
-                error!(
-                    "request id: {} - Failed to send response with error: {:?}",
-                    &request_id, e
-                );
+        let command = match Command::parse(command_str) {
+            Some(command) => command,
+            None => {
+                return ();
+            }
+        };
+
+        let span = info_span!("Handling message", command = msg.content);
+
+        // Instrument the span
+        async move {
+            let response = match handle_command(&command, &self.app_settings, &self.db_pool).await {
+                Ok(response) => response,
+                Err(e) => {
+                    tracing::error!("Failed to process command with error: {:?}", e);
+                    return ();
+                }
+            };
+
+            match msg.channel_id.say(&ctx, response).await {
+                Ok(_) => (),
+                Err(e) => {
+                    tracing::error!("Failed to send response with error: {:?}", e);
+                }
             }
         }
-
-        info!("request id: {} - Handled Successfully", &request_id);
+        .instrument(span)
+        .await;
     }
 }
 
