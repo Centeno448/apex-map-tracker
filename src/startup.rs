@@ -7,6 +7,7 @@ use serenity::prelude::*;
 use sqlx::MySqlPool;
 use std::sync::Arc;
 use tracing::{error, info};
+use uuid::Uuid;
 
 use crate::commands::{handle_command, Command};
 use crate::configuration::Settings;
@@ -45,12 +46,19 @@ impl EventHandler for Handler {
             None => return (),
         };
 
+        let request_id = Uuid::new_v4();
+
+        info!(
+            "request id: {} - Handling command {prefix}{}",
+            &request_id, &command
+        );
+
         let response = match handle_command(&command, &self.app_settings, &self.db_pool).await {
             Ok(response) => response,
             Err(e) => {
                 error!(
-                    "Failed to process command {prefix}{} with error: {:?}",
-                    &command, e
+                    "request id: {} - Failed to process command {prefix}{} with error: {:?}",
+                    &request_id, &command, e
                 );
                 return ();
             }
@@ -59,9 +67,14 @@ impl EventHandler for Handler {
         match msg.channel_id.say(&ctx, response).await {
             Ok(_) => (),
             Err(e) => {
-                error!("Failed to send response with error: {:?}", e);
+                error!(
+                    "request id: {} - Failed to send response with error: {:?}",
+                    &request_id, e
+                );
             }
         }
+
+        info!("request id: {} - Handled Successfully", &request_id);
     }
 }
 
