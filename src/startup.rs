@@ -53,7 +53,7 @@ impl EventHandler for Handler {
             }
         };
 
-        let span = info_span!("Handling message", command = msg.content);
+        let span = info_span!("Handling command", command = msg.content);
 
         // Instrument the span
         async move {
