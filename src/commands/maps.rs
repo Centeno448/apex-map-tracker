@@ -1,32 +1,9 @@
-use core::fmt;
 use sqlx::{query, MySqlPool};
 
+use crate::commands::result::CommandResult;
 use crate::configuration::Settings;
 use crate::map_rotation::{current_map, is_map_available};
 use crate::map_rotation::{MapRotation, MapRotationCode};
-
-#[derive(Debug, Clone)]
-pub struct CommandError(String);
-
-impl fmt::Display for CommandError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Command failed with error: {}", &self.0)
-    }
-}
-
-impl From<reqwest::Error> for CommandError {
-    fn from(value: reqwest::Error) -> Self {
-        Self(value.to_string())
-    }
-}
-
-impl From<sqlx::Error> for CommandError {
-    fn from(value: sqlx::Error) -> Self {
-        Self(value.to_string())
-    }
-}
-
-type CommandResult<T> = std::result::Result<T, CommandError>;
 
 pub async fn time_until(
     map: MapRotationCode,

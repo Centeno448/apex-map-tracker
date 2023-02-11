@@ -2,6 +2,7 @@ use sqlx::MySqlPool;
 use std::fmt::Display;
 
 use crate::commands::maps::*;
+use crate::commands::result::CommandResult;
 use crate::configuration::Settings;
 use crate::map_rotation::MapRotationCode;
 
@@ -45,7 +46,7 @@ pub async fn handle_command(
     command: &Command,
     app_settings: &Settings,
     db_pool: &MySqlPool,
-) -> Result<String, CommandError> {
+) -> CommandResult<String> {
     match command {
         Command::OlympusCommand => {
             time_until(MapRotationCode::OlympusRotation, app_settings, db_pool).await
