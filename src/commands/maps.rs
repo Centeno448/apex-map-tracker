@@ -10,7 +10,11 @@ pub async fn time_until(
     app_settings: &Settings,
     db_pool: &MySqlPool,
 ) -> CommandResult<String> {
-    let map_rotation = map_rotation_request(&app_settings.application.api_key).await?;
+    let map_rotation = map_rotation_request(
+        &app_settings.application.api_base_url,
+        &app_settings.application.api_key,
+    )
+    .await?;
 
     let rows = query!("SELECT code FROM map_rotations",)
         .fetch_all(db_pool)
@@ -26,14 +30,18 @@ pub async fn time_until(
 }
 
 pub async fn map(app_settings: &Settings) -> CommandResult<String> {
-    let map_rotation = map_rotation_request(&app_settings.application.api_key).await?;
+    let map_rotation = map_rotation_request(
+        &app_settings.application.api_base_url,
+        &app_settings.application.api_key,
+    )
+    .await?;
 
     Ok(current_map(map_rotation))
 }
 
-async fn map_rotation_request(api_token: &str) -> CommandResult<MapRotation> {
+async fn map_rotation_request(base_url: &str, api_token: &str) -> CommandResult<MapRotation> {
     let client = reqwest::Client::new();
-    let request_url = format!("https://api.mozambiquehe.re/maprotation?auth={}", api_token);
+    let request_url = format!("{}/maprotation?auth={}", base_url, api_token);
 
     Ok(client
         .get(request_url)

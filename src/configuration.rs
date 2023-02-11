@@ -12,6 +12,7 @@ pub struct Settings {
 #[derive(Debug, serde::Deserialize)]
 pub struct ApplicationSettings {
     pub api_key: String,
+    pub api_base_url: String,
     pub discord_bot_key: String,
     pub base_log_path: String,
 }
