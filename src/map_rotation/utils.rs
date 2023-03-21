@@ -1,4 +1,4 @@
-use super::{next_map::NextMap, MapRotation, MapRotationCode};
+use super::{battle_royale::NextMap, MapRotation, MapRotationCode};
 
 fn calculate_time_to_map_in_minutes(
     map: &MapRotationCode,
@@ -52,7 +52,7 @@ mod tests {
 
     mod calculate_time_to_map_in_minutes {
         use super::calculate_time_to_map_in_minutes;
-        use crate::map_rotation::{next_map::NextMap, MapRotationCode};
+        use crate::map_rotation::{battle_royale::NextMap, MapRotationCode};
 
         #[test]
         fn when_search_is_next_map_returns_current_map_remaining_() {
@@ -88,7 +88,8 @@ mod tests {
 
     mod current_map {
         use crate::map_rotation::{
-            current_map::CurrentMap, next_map::NextMap, MapRotation, MapRotationCode,
+            battle_royale::{CurrentMap, NextMap},
+            MapRotation, MapRotationCode,
         };
 
         use super::current_map;
@@ -116,7 +117,8 @@ mod tests {
 
     mod is_map_available {
         use crate::map_rotation::{
-            current_map::CurrentMap, next_map::NextMap, MapRotation, MapRotationCode,
+            battle_royale::{CurrentMap, NextMap},
+            MapRotation, MapRotationCode,
         };
 
         use super::is_map_available;

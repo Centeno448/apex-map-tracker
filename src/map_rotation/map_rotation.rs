@@ -1,5 +1,4 @@
-use super::current_map::CurrentMap;
-use super::next_map::NextMap;
+use super::battle_royale::{CurrentMap, NextMap};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
