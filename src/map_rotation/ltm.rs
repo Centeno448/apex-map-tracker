@@ -3,6 +3,7 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct CurrentLTM {
     pub map: String,
+    #[serde(rename = "eventName")]
     pub event_name: String,
     #[serde(rename = "remainingMins")]
     pub remaining_mins: u8,
@@ -13,6 +14,7 @@ pub struct CurrentLTM {
 #[derive(Deserialize, Debug)]
 pub struct NextLTM {
     pub map: String,
+    #[serde(rename = "eventName")]
     pub event_name: String,
     #[serde(rename = "DurationInMinutes")]
     pub duration_in_minutes: u8,
