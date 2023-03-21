@@ -2,15 +2,15 @@ use sqlx::{query, MySqlPool};
 
 use crate::commands::result::CommandResult;
 use crate::configuration::Settings;
-use crate::map_rotation::{current_map, is_map_available};
-use crate::map_rotation::{MapRotation, MapRotationCode};
+use crate::map_rotation::{current_br_map, is_br_map_available};
+use crate::map_rotation::{MapRotationCode, Rotations};
 
 pub async fn time_until(
     map: MapRotationCode,
     app_settings: &Settings,
     db_pool: &MySqlPool,
 ) -> CommandResult<String> {
-    let map_rotation = map_rotation_request(
+    let rotations = map_rotation_request(
         &app_settings.application.api_base_url,
         &app_settings.application.api_key,
     )
@@ -26,27 +26,31 @@ pub async fn time_until(
         season_map_rotation.push(row.code.as_str().into());
     }
 
-    Ok(is_map_available(map_rotation, &map, &season_map_rotation))
+    Ok(is_br_map_available(
+        rotations.battle_royale,
+        &map,
+        &season_map_rotation,
+    ))
 }
 
 pub async fn map(app_settings: &Settings) -> CommandResult<String> {
-    let map_rotation = map_rotation_request(
+    let rotations = map_rotation_request(
         &app_settings.application.api_base_url,
         &app_settings.application.api_key,
     )
     .await?;
 
-    Ok(current_map(map_rotation))
+    Ok(current_br_map(rotations.battle_royale))
 }
 
-async fn map_rotation_request(base_url: &str, api_token: &str) -> CommandResult<MapRotation> {
+async fn map_rotation_request(base_url: &str, api_token: &str) -> CommandResult<Rotations> {
     let client = reqwest::Client::new();
-    let request_url = format!("{}/maprotation?auth={}", base_url, api_token);
+    let request_url = format!("{}/maprotation?auth={}&version=2", base_url, api_token);
 
     Ok(client
         .get(request_url)
         .send()
         .await?
-        .json::<MapRotation>()
+        .json::<Rotations>()
         .await?)
 }

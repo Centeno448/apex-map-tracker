@@ -1,6 +1,6 @@
-use super::{battle_royale::NextMap, MapRotation, MapRotationCode};
+use super::{battle_royale::NextMap, BRRotation, MapRotationCode};
 
-fn calculate_time_to_map_in_minutes(
+fn calculate_time_to_br_map_in_minutes(
     map: &MapRotationCode,
     cm_remaining: &u8,
     next_map: &NextMap,
@@ -12,8 +12,8 @@ fn calculate_time_to_map_in_minutes(
     cm_remaining + next_map.duration_in_minutes
 }
 
-pub fn is_map_available(
-    rotation: MapRotation,
+pub fn is_br_map_available(
+    rotation: BRRotation,
     map: &MapRotationCode,
     season_map_rotation: &Vec<MapRotationCode>,
 ) -> String {
@@ -27,7 +27,7 @@ pub fn is_map_available(
         let time_left = &rotation.current.remaining_timer;
         return format!("En efecto, está {map}. Tiempo restante: {time_left}");
     } else {
-        let time_until = calculate_time_to_map_in_minutes(
+        let time_until = calculate_time_to_br_map_in_minutes(
             &map,
             &rotation.current.remaining_mins,
             &rotation.next,
@@ -39,7 +39,7 @@ pub fn is_map_available(
     }
 }
 
-pub fn current_map(rotation: MapRotation) -> String {
+pub fn current_br_map(rotation: BRRotation) -> String {
     let current_map = rotation.current.code;
     let time_left = &rotation.current.remaining_timer;
 
@@ -48,10 +48,10 @@ pub fn current_map(rotation: MapRotation) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{calculate_time_to_map_in_minutes, current_map, is_map_available};
+    use super::{calculate_time_to_br_map_in_minutes, current_br_map, is_br_map_available};
 
-    mod calculate_time_to_map_in_minutes {
-        use super::calculate_time_to_map_in_minutes;
+    mod calculate_time_to_br_map_in_minutes {
+        use super::calculate_time_to_br_map_in_minutes;
         use crate::map_rotation::{battle_royale::NextMap, MapRotationCode};
 
         #[test]
@@ -60,7 +60,7 @@ mod tests {
                 code: MapRotationCode::BrokenMoonRotation,
                 duration_in_minutes: 100,
             };
-            let actual = calculate_time_to_map_in_minutes(
+            let actual = calculate_time_to_br_map_in_minutes(
                 &MapRotationCode::BrokenMoonRotation,
                 &10,
                 &next_map,
@@ -77,8 +77,11 @@ mod tests {
                 code: MapRotationCode::BrokenMoonRotation,
                 duration_in_minutes: 100,
             };
-            let actual =
-                calculate_time_to_map_in_minutes(&MapRotationCode::OlympusRotation, &10, &next_map);
+            let actual = calculate_time_to_br_map_in_minutes(
+                &MapRotationCode::OlympusRotation,
+                &10,
+                &next_map,
+            );
 
             let expected = 110;
 
@@ -86,17 +89,17 @@ mod tests {
         }
     }
 
-    mod current_map {
+    mod current_br_map {
         use crate::map_rotation::{
             battle_royale::{CurrentMap, NextMap},
-            MapRotation, MapRotationCode,
+            BRRotation, MapRotationCode,
         };
 
-        use super::current_map;
+        use super::current_br_map;
 
         #[test]
         fn returns_the_correct_string() {
-            let rotation = MapRotation {
+            let rotation = BRRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
                     remaining_mins: 10,
@@ -109,23 +112,23 @@ mod tests {
             };
 
             let expected = "El mapa actual es Broken Moon. Tiempo restante: 00:10:00";
-            let actual = current_map(rotation);
+            let actual = current_br_map(rotation);
 
             assert_eq!(expected, actual);
         }
     }
 
-    mod is_map_available {
+    mod is_br_map_available {
         use crate::map_rotation::{
             battle_royale::{CurrentMap, NextMap},
-            MapRotation, MapRotationCode,
+            BRRotation, MapRotationCode,
         };
 
-        use super::is_map_available;
+        use super::is_br_map_available;
 
         #[test]
         fn when_map_is_not_in_rotation_returns_the_correct_string() {
-            let rotation = MapRotation {
+            let rotation = BRRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
                     remaining_mins: 10,
@@ -144,7 +147,7 @@ mod tests {
             ];
 
             let expected = "Punto Tormenta no está en la rotación de esta temporada :C";
-            let actual = is_map_available(
+            let actual = is_br_map_available(
                 rotation,
                 &MapRotationCode::StormPointRotation,
                 &season_map_rotation,
@@ -155,7 +158,7 @@ mod tests {
 
         #[test]
         fn when_search_is_current_map_returns_the_correct_string() {
-            let rotation = MapRotation {
+            let rotation = BRRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
                     remaining_mins: 10,
@@ -174,7 +177,7 @@ mod tests {
             ];
 
             let expected = "En efecto, está Broken Moon. Tiempo restante: 00:10:00";
-            let actual = is_map_available(
+            let actual = is_br_map_available(
                 rotation,
                 &MapRotationCode::BrokenMoonRotation,
                 &season_map_rotation,
@@ -185,7 +188,7 @@ mod tests {
 
         #[test]
         fn when_search_is_not_current_map_returns_the_correct_string() {
-            let rotation = MapRotation {
+            let rotation = BRRotation {
                 current: CurrentMap {
                     code: MapRotationCode::BrokenMoonRotation,
                     remaining_mins: 10,
@@ -204,7 +207,7 @@ mod tests {
             ];
 
             let expected = "Nel, actualmente está Broken Moon. Fin del Mundo estára en 11 minutos.";
-            let actual = is_map_available(
+            let actual = is_br_map_available(
                 rotation,
                 &MapRotationCode::WorldsEdgeRotation,
                 &season_map_rotation,
