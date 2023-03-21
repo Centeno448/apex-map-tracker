@@ -1,4 +1,4 @@
-use super::{battle_royale::NextMap, BRRotation, MapRotationCode};
+use super::{battle_royale::NextMap, BRRotation, LTMRotation, MapRotationCode};
 
 fn calculate_time_to_br_map_in_minutes(
     map: &MapRotationCode,
@@ -44,6 +44,16 @@ pub fn current_br_map(rotation: BRRotation) -> String {
     let time_left = &rotation.current.remaining_timer;
 
     format!("El mapa actual es {current_map}. Tiempo restante: {time_left}")
+}
+
+pub fn current_ltm(rotation: LTMRotation) -> String {
+    let current_map = rotation.current.map;
+    let current_mode = rotation.current.event_name;
+    let time_left = &rotation.current.remaining_timer;
+
+    format!(
+        "El modo actual es {current_mode} en el mapa {current_map}. Tiempo restante: {time_left}"
+    )
 }
 
 #[cfg(test)]
@@ -212,6 +222,34 @@ mod tests {
                 &MapRotationCode::WorldsEdgeRotation,
                 &season_map_rotation,
             );
+
+            assert_eq!(expected, actual);
+        }
+    }
+
+    mod current_ltm {
+        use crate::map_rotation::ltm::{CurrentLTM, NextLTM};
+        use crate::map_rotation::utils::current_ltm;
+        use crate::map_rotation::LTMRotation;
+
+        #[test]
+        fn returns_the_correct_string() {
+            let rotation = LTMRotation {
+                current: CurrentLTM {
+                    map: "Habitat".into(),
+                    event_name: "TDM".into(),
+                    remaining_mins: 8,
+                    remaining_timer: "00:10:00".into(),
+                },
+                next: NextLTM {
+                    map: "Ship".into(),
+                    event_name: "Gun Game".into(),
+                    duration_in_minutes: 5,
+                },
+            };
+
+            let expected = "El modo actual es TDM en el mapa Habitat. Tiempo restante: 00:10:00";
+            let actual = current_ltm(rotation);
 
             assert_eq!(expected, actual);
         }

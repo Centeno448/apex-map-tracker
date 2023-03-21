@@ -13,6 +13,7 @@ pub enum Command {
     MoonCommand,
     OlympusCommand,
     PuntoCommand,
+    LtmCommand,
 }
 
 impl Command {
@@ -24,6 +25,7 @@ impl Command {
             "kings" => Some(Command::KingsCommand),
             "punto" => Some(Command::PuntoCommand),
             "map" => Some(Command::MapCommand),
+            "ltm" => Some(Command::LtmCommand),
             _ => None,
         }
     }
@@ -38,6 +40,7 @@ impl Display for Command {
             Self::KingsCommand => write!(f, "{}", "kings"),
             Self::PuntoCommand => write!(f, "{}", "punto"),
             Self::MapCommand => write!(f, "{}", "map"),
+            Self::LtmCommand => write!(f, "{}", "ltm"),
         }
     }
 }
@@ -64,5 +67,6 @@ pub async fn handle_command(
             time_until(MapRotationCode::StormPointRotation, app_settings, db_pool).await
         }
         Command::MapCommand => map(app_settings).await,
+        Command::LtmCommand => ltm(app_settings).await,
     }
 }

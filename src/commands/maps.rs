@@ -2,7 +2,7 @@ use sqlx::{query, MySqlPool};
 
 use crate::commands::result::CommandResult;
 use crate::configuration::Settings;
-use crate::map_rotation::{current_br_map, is_br_map_available};
+use crate::map_rotation::{current_br_map, current_ltm, is_br_map_available};
 use crate::map_rotation::{MapRotationCode, Rotations};
 
 pub async fn time_until(
@@ -41,6 +41,16 @@ pub async fn map(app_settings: &Settings) -> CommandResult<String> {
     .await?;
 
     Ok(current_br_map(rotations.battle_royale))
+}
+
+pub async fn ltm(app_settings: &Settings) -> CommandResult<String> {
+    let rotations = map_rotation_request(
+        &app_settings.application.api_base_url,
+        &app_settings.application.api_key,
+    )
+    .await?;
+
+    Ok(current_ltm(rotations.ltm))
 }
 
 async fn map_rotation_request(base_url: &str, api_token: &str) -> CommandResult<Rotations> {
