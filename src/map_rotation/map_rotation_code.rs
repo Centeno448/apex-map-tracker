@@ -13,6 +13,8 @@ pub enum MapRotationCode {
     BrokenMoonRotation,
     #[serde(rename = "kings_canyon_rotation")]
     KingsCanyonRotation,
+    #[serde(rename = "edistrict_rotation")]
+    EDistrictRotation,
 }
 
 impl From<&str> for MapRotationCode {
@@ -23,6 +25,7 @@ impl From<&str> for MapRotationCode {
             "OlympusRotation" => MapRotationCode::OlympusRotation,
             "BrokenMoonRotation" => MapRotationCode::BrokenMoonRotation,
             "KingsCanyonRotation" => MapRotationCode::KingsCanyonRotation,
+            "EDistrictRotation" => MapRotationCode::EDistrictRotation,
             _ => MapRotationCode::KingsCanyonRotation,
         }
     }
@@ -41,6 +44,7 @@ impl fmt::Display for MapRotationCode {
             Self::OlympusRotation => write!(f, "{}", "Olympus"),
             Self::BrokenMoonRotation => write!(f, "{}", "Broken Moon"),
             Self::KingsCanyonRotation => write!(f, "{}", "Kings Canyon"),
+            Self::EDistrictRotation => write!(f, "{}", "E-District"),
         }
     }
 }
@@ -67,6 +71,10 @@ mod tests {
         assert_eq!(
             format!("{}", MapRotationCode::KingsCanyonRotation),
             "Kings Canyon"
+        );
+        assert_eq!(
+            format!("{}", MapRotationCode::EDistrictRotation),
+            "E-District"
         );
     }
 }
