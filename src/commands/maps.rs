@@ -2,8 +2,8 @@ use sqlx::{query, MySqlPool};
 
 use crate::commands::result::CommandResult;
 use crate::configuration::Settings;
-use crate::map_rotation::{current_br_map, current_ltm, is_br_map_available};
-use crate::map_rotation::{MapRotationCode, Rotations};
+use crate::map_rotation::{current_br_map, current_ltm, is_br_map_available, specific_ltm};
+use crate::map_rotation::{LTMCode, MapRotationCode, Rotations};
 
 pub async fn time_until(
     map: MapRotationCode,
@@ -51,6 +51,16 @@ pub async fn ltm(app_settings: &Settings) -> CommandResult<String> {
     .await?;
 
     Ok(current_ltm(rotations.ltm))
+}
+
+pub async fn gunrun(app_settings: &Settings) -> CommandResult<String> {
+    let rotations = map_rotation_request(
+        &app_settings.application.api_base_url,
+        &app_settings.application.api_key,
+    )
+    .await?;
+
+    Ok(specific_ltm(LTMCode::GunRun, rotations.ltm))
 }
 
 async fn map_rotation_request(base_url: &str, api_token: &str) -> CommandResult<Rotations> {

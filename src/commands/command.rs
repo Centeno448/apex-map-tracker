@@ -13,6 +13,7 @@ pub enum Command {
     MoonCommand,
     OlympusCommand,
     PuntoCommand,
+    GunRunCommand,
     LtmCommand,
 }
 
@@ -24,6 +25,7 @@ impl Command {
             "fin" => Some(Command::FinCommand),
             "kings" => Some(Command::KingsCommand),
             "punto" => Some(Command::PuntoCommand),
+            "gunrun" => Some(Command::GunRunCommand),
             "map" => Some(Command::MapCommand),
             "ltm" => Some(Command::LtmCommand),
             _ => None,
@@ -41,6 +43,7 @@ impl Display for Command {
             Self::PuntoCommand => write!(f, "{}", "punto"),
             Self::MapCommand => write!(f, "{}", "map"),
             Self::LtmCommand => write!(f, "{}", "ltm"),
+            Self::GunRunCommand => write!(f, "{}", "gunrun"),
         }
     }
 }
@@ -68,5 +71,6 @@ pub async fn handle_command(
         }
         Command::MapCommand => map(app_settings).await,
         Command::LtmCommand => ltm(app_settings).await,
+        Command::GunRunCommand => gunrun(app_settings).await,
     }
 }

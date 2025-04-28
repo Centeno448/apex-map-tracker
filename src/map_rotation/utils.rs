@@ -1,4 +1,6 @@
-use super::{battle_royale::NextMap, BRRotation, LTMRotation, MapRotationCode};
+use super::{
+    battle_royale::NextMap, ltm::NextLTM, BRRotation, LTMCode, LTMRotation, MapRotationCode,
+};
 
 fn calculate_time_to_br_map_in_minutes(
     map: &MapRotationCode,
@@ -6,6 +8,14 @@ fn calculate_time_to_br_map_in_minutes(
     next_map: &NextMap,
 ) -> u8 {
     if next_map.code == *map {
+        return *cm_remaining;
+    }
+
+    cm_remaining + next_map.duration_in_minutes
+}
+
+fn calculate_time_to_ltm_in_minutes(ltm: &LTMCode, cm_remaining: &u8, next_map: &NextLTM) -> u8 {
+    if *ltm == next_map.event_name.as_str().into() {
         return *cm_remaining;
     }
 
@@ -47,13 +57,28 @@ pub fn current_br_map(rotation: BRRotation) -> String {
 }
 
 pub fn current_ltm(rotation: LTMRotation) -> String {
-    let current_map = rotation.current.map;
     let current_mode = rotation.current.event_name;
     let time_left = &rotation.current.remaining_timer;
 
-    format!(
-        "El modo actual es {current_mode} en el mapa {current_map}. Tiempo restante: {time_left}"
-    )
+    format!("El modo actual es {current_mode}. Tiempo restante: {time_left}")
+}
+
+pub fn specific_ltm(ltm_name: LTMCode, rotation: LTMRotation) -> String {
+    let current_mode = rotation.current.event_name.as_str();
+
+    if ltm_name == current_mode.into() {
+        let time_left = &rotation.current.remaining_timer;
+        return format!("En efecto, está {ltm_name}. Tiempo restante: {time_left}");
+    } else {
+        let time_until = calculate_time_to_ltm_in_minutes(
+            &ltm_name,
+            &rotation.current.remaining_mins,
+            &rotation.next,
+        );
+        return format!(
+            "Nel, actualmente está {current_mode}. {ltm_name} estára en {time_until} minutos."
+        );
+    }
 }
 
 #[cfg(test)]
@@ -236,19 +261,17 @@ mod tests {
         fn returns_the_correct_string() {
             let rotation = LTMRotation {
                 current: CurrentLTM {
-                    map: "Habitat".into(),
                     event_name: "TDM".into(),
                     remaining_mins: 8,
                     remaining_timer: "00:10:00".into(),
                 },
                 next: NextLTM {
-                    map: "Ship".into(),
                     event_name: "Gun Game".into(),
                     duration_in_minutes: 5,
                 },
             };
 
-            let expected = "El modo actual es TDM en el mapa Habitat. Tiempo restante: 00:10:00";
+            let expected = "El modo actual es TDM. Tiempo restante: 00:10:00";
             let actual = current_ltm(rotation);
 
             assert_eq!(expected, actual);
