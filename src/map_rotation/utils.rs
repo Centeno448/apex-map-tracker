@@ -83,14 +83,17 @@ pub fn specific_ltm(ltm_name: LTMCode, rotation: LTMRotation) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{calculate_time_to_br_map_in_minutes, current_br_map, is_br_map_available};
+    use super::{
+        calculate_time_to_br_map_in_minutes, calculate_time_to_ltm_in_minutes, current_br_map,
+        is_br_map_available,
+    };
 
     mod calculate_time_to_br_map_in_minutes {
         use super::calculate_time_to_br_map_in_minutes;
         use crate::map_rotation::{battle_royale::NextMap, MapRotationCode};
 
         #[test]
-        fn when_search_is_next_map_returns_current_map_remaining_() {
+        fn when_search_is_next_map_returns_current_map_remaining() {
             let next_map = NextMap {
                 code: MapRotationCode::BrokenMoonRotation,
                 duration_in_minutes: 100,
@@ -106,8 +109,7 @@ mod tests {
         }
 
         #[test]
-        fn when_search_is_not_next_map_returns_sum_of_current_map_remaining_and_next_map_duration_()
-        {
+        fn when_search_is_not_next_map_returns_sum_of_current_and_next_map_duration() {
             let next_map = NextMap {
                 code: MapRotationCode::BrokenMoonRotation,
                 duration_in_minutes: 100,
@@ -275,6 +277,37 @@ mod tests {
             let actual = current_ltm(rotation);
 
             assert_eq!(expected, actual);
+        }
+    }
+
+    mod calculate_time_to_ltm_in_minutes {
+        use super::calculate_time_to_ltm_in_minutes;
+        use crate::map_rotation::{ltm::NextLTM, LTMCode};
+
+        #[test]
+        fn when_search_is_next_ltm_returns_current_ltm_remaining() {
+            let next_ltm = NextLTM {
+                event_name: "Gun Run".into(),
+                duration_in_minutes: 100,
+            };
+            let actual = calculate_time_to_ltm_in_minutes(&LTMCode::GunRun, &10, &next_ltm);
+
+            let expected = 10;
+
+            assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn when_search_is_not_next_ltm_returns_sum_of_current_and_next_ltm_duration() {
+            let next_map = NextLTM {
+                event_name: "TDM".into(),
+                duration_in_minutes: 100,
+            };
+            let actual = calculate_time_to_ltm_in_minutes(&LTMCode::GunRun, &10, &next_map);
+
+            let expected = 110;
+
+            assert_eq!(actual, expected);
         }
     }
 }
